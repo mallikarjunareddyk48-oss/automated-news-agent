@@ -7,7 +7,11 @@ from phi.tools.duckduckgo import DuckDuckGo
 
 # 1. Configure the AI Agent
 agent = Agent(
-    model=OpenAIChat(id="glm-5.2-free", base_url="https://api.zenmux.ai/v1"),
+    model=OpenAIChat(
+        id="google/diffusiongemma-26b-a4b-it", 
+        api_key=os.environ.get("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"),
+        base_url="https://integrate.api.nvidia.com/v1"
+    ),
     tools=[DuckDuckGo()],
     show_tool_calls=False # Keeps the output clean
 )
