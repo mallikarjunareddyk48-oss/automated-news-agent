@@ -13,30 +13,36 @@ agent = Agent(
         base_url="https://integrate.api.nvidia.com/v1"
     ),
     tools=[DuckDuckGo()],
-    show_tool_calls=False # Keeps the output clean
+    show_tool_calls=False
 )
 
-# 2. Tell the AI what to search for
+# 2. Tell the AI EXACTLY what to do (Now asking for Links!)
 prompt = """
 Search the web for the most important news from the past hour in these 3 categories:
 1. Breaking Global/India News
 2. Technology News
 3. AI (Artificial Intelligence) News
-Summarize the top stories in clean, easy-to-read bullet points.
+
+For EVERY news item you find, you MUST provide:
+- A clear Headline
+- A short 2-3 line detailed summary of what happened
+- The ORIGINAL URL LINK (Source link) to read the full article.
+
+Format the output cleanly so it is easy to read in an email.
 """
 
-print("Fetching news...")
+print("Fetching news with links...")
 response = agent.run(prompt)
 news_summary = response.content
 
-# 3. Configure the Email Sender using secure environment variables
+# 3. Configure the Email Sender
 sender_email = os.environ.get("GMAIL_ADDRESS")
 sender_password = os.environ.get("GMAIL_APP_PASSWORD")
-receiver_email = sender_email # Sending the news to yourself
+receiver_email = sender_email
 
 # 4. Format the Email
 msg = MIMEText(news_summary)
-msg['Subject'] = 'Hourly Update: Breaking, Tech & AI News'
+msg['Subject'] = 'Hourly Update: Detailed News with Links 🔗'
 msg['From'] = sender_email
 msg['To'] = receiver_email
 
@@ -46,4 +52,4 @@ with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
     server.login(sender_email, sender_password)
     server.send_message(msg)
 
-print("Success! News sent to your inbox.")
+print("Success! News with links sent to your inbox.")
